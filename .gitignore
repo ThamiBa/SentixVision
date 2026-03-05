@@ -1,0 +1,40 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# --- Databases ---
+*.db
+*.sqlite3
+postgres_data/
+
+# --- Large AI Models ---
+*.pt
+*.onnx
+*.weights
+*.bin
+*.model
+*.task
+models/
+weights/
+
+# --- Artifacts/Data ---
+data/
+outputs/
+temp/
+*.log
+
+# --- IDEs/System ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+# We keep docker-compose.yml for configuration
+.dockerignore

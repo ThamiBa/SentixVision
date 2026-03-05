@@ -1,0 +1,17 @@
+# AI & Computer Vision
+ultralytics
+opencv-python
+deepface
+tf-keras
+
+# Frontend & Dashboard
+streamlit
+pandas
+plotly
+numpy
+
+# Utilities
+requests
+lapx
+sqlalchemy
+streamlit-drawable-canvas

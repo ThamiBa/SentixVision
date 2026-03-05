@@ -1,0 +1,36 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+ENV PYTHONPATH=/app
+
+# Install system dependencies for OpenCV and AI
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements_backend.txt .
+# We also need the core requirements for AI
+COPY requirements.txt .
+
+# Upgrade pip and set a higher timeout for large packages
+RUN pip install --upgrade pip
+
+# FAST-BUILD OPTIMIZATION: Install CPU-only torch first to avoid 1GB+ CUDA download
+RUN pip install --no-cache-dir --default-timeout=1000 torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+RUN pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
+RUN pip install --no-cache-dir --default-timeout=1000 -r requirements_backend.txt
+
+COPY . .
+
+# Expose FastAPI and MJPEG ports
+EXPOSE 8000
+EXPOSE 5002
+
+CMD ["python", "-m", "backend.api.main"]

@@ -1,0 +1,52 @@
+services:
+  # ── FRONTEND: Streamlit Dashboard ────────────────────────────────
+  dashboard:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      - API_URL=${API_URL:-http://backend:8000}
+    depends_on:
+      - backend
+
+  # ── BACKEND: FastAPI SaaS API ────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+      - "5002:5002" # MJPEG Server Port
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://user:pass@db:5432/sentix}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+    depends_on:
+      - db
+      - redis
+
+  # ── DATABASE: PostgreSQL + TimescaleDB ───────────────────────────
+  db:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pass}
+      - POSTGRES_DB=${POSTGRES_DB:-sentix}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # ── CACHE & PUBSUB: Redis ────────────────────────────────────────
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
